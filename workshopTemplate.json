@@ -1,0 +1,20 @@
+[
+    {
+        "id": "002678895fea7dda",
+        "type": "function",
+        "z": "cdfcf48f5464e909",
+        "name": "calculateGeofence",
+        "func": "\nconst point = [msg.payload.lat, msg.payload.lon];\nconst polygon = flow.get('polygon') || [];\n\n\nfunction isPointInPolygon(point, polygon) {\n    let isInside = false;\n    let x = point[1], y = point[0];\n\n    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {\n        let xi = polygon[i].lng, yi = polygon[i].lat;\n        let xj = polygon[j].lng, yj = polygon[j].lat;\n\n        if ((yi > y) !== (yj > y) &&\n            (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) {\n            isInside = !isInside;\n        }\n    }\n    return isInside;\n}\n\n\nconst isInside = isPointInPolygon(point, polygon);\n\n\nmsg.payload.isInside = isInside;\n\nif (isInside) {\n    msg.payload.iconColor = \"green\";\n} else {\n    msg.payload.iconColor = \"red\";\n}\n\nmsg.payload.layer = \"pointsLayer\";\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 590,
+        "y": 400,
+        "wires": [
+            []
+        ]
+    }
+]
