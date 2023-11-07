@@ -1,0 +1,22 @@
+[
+    {
+        "id": "d656a0bc6f3ef47d",
+        "type": "function",
+        "z": "cdfcf48f5464e909",
+        "name": "getGeoFence",
+        "func": "if (msg.payload.action === \"draw\" && msg.payload.type === \"Rectangle\") {\n    flow.set('polygon', msg.payload.area);\n}\nelse if (msg.payload.action === \"drawdelete\") {\n    flow.set('polygon', null);\n\n}",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 440,
+        "y": 460,
+        "wires": [
+            [
+                "002678895fea7dda"
+            ]
+        ]
+    }
+]
