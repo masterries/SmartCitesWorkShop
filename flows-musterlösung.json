@@ -1,9 +1,138 @@
 [
     {
-        "id": "d656a0bc6f3ef47d",
+        "id": "5a668e9c04bd46c8",
+        "type": "tab",
+        "label": "Flow 2",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "7811f687dc0ec93f",
         "type": "function",
-        "z": "cdfcf48f5464e909",
-        "name": "getGeoFence",
+        "z": "5a668e9c04bd46c8",
+        "name": "calculateGeofence",
+        "func": "\nconst point = [msg.payload.lat, msg.payload.lon];\nconst polygon = flow.get('polygon') || [];\n\n\nfunction isPointInPolygon(point, polygon) {\n    let isInside = false;\n    let x = point[1], y = point[0];\n\n    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {\n        let xi = polygon[i].lng, yi = polygon[i].lat;\n        let xj = polygon[j].lng, yj = polygon[j].lat;\n\n        if ((yi > y) !== (yj > y) &&\n            (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) {\n            isInside = !isInside;\n        }\n    }\n    return isInside;\n}\n\n\nconst isInside = isPointInPolygon(point, polygon);\n\n\nmsg.payload.isInside = isInside;\n\nif (isInside) {\n    msg.payload.iconColor = \"green\";\n} else {\n    msg.payload.iconColor = \"red\";\n}\n\nmsg.payload.layer = \"pointsLayer\";\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 670,
+        "y": 460,
+        "wires": [
+            [
+                "7a5ac724f7d0a16d"
+            ]
+        ]
+    },
+    {
+        "id": "7a5ac724f7d0a16d",
+        "type": "ui_worldmap",
+        "z": "5a668e9c04bd46c8",
+        "group": "b71dce7fff649f38",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "lat": "48.21",
+        "lon": "16.36",
+        "zoom": "12",
+        "layer": "OSMC",
+        "cluster": "",
+        "maxage": "",
+        "usermenu": "hide",
+        "layers": "show",
+        "panit": "false",
+        "panlock": "false",
+        "zoomlock": "false",
+        "hiderightclick": "true",
+        "coords": "none",
+        "showgrid": "false",
+        "showruler": "false",
+        "allowFileDrop": "false",
+        "path": "/worldmap",
+        "overlist": "DR",
+        "maplist": "OSMG,OSMC,EsriC,EsriS,EsriT,EsriDG,UKOS",
+        "mapname": "",
+        "mapurl": "",
+        "mapopt": "",
+        "mapwms": false,
+        "x": 880,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "90afd4e6af6ab6c3",
+        "type": "ui_button",
+        "z": "5a668e9c04bd46c8",
+        "name": "",
+        "group": "b71dce7fff649f38",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Spawn Human",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 240,
+        "y": 340,
+        "wires": [
+            [
+                "0853ea3b41b42820"
+            ]
+        ]
+    },
+    {
+        "id": "0853ea3b41b42820",
+        "type": "function",
+        "z": "5a668e9c04bd46c8",
+        "name": "function 1",
+        "func": "// Initial coordinates\nvar latitude = flow.get('latitude') || 48.239068;\nvar longitude = flow.get('longitude') || 16.377577;\n\nvar randomLatShift = (Math.random() - 0.5) * 0.001;\nvar randomLonShift = (Math.random() - 0.5) * 0.001;\n\nlatitude += randomLatShift;\nlongitude += randomLonShift;\n\nflow.set('latitude', latitude);\nflow.set('longitude', longitude);\n\n\n\nmsg.payload = {\n    name: \"male\",\n    lat: latitude,\n    lon: longitude,\n    icon: \"male\",\n    layer: \"drawing\"\n};\n\nreturn msg;\n\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 340,
+        "wires": [
+            [
+                "f79837815428922c",
+                "7811f687dc0ec93f"
+            ]
+        ]
+    },
+    {
+        "id": "f79837815428922c",
+        "type": "worldmap-tracks",
+        "z": "5a668e9c04bd46c8",
+        "name": "",
+        "depth": "100",
+        "layer": "single",
+        "smooth": false,
+        "x": 690,
+        "y": 220,
+        "wires": [
+            [
+                "7a5ac724f7d0a16d"
+            ]
+        ]
+    },
+    {
+        "id": "1d3b4c6aa197b5b2",
+        "type": "function",
+        "z": "5a668e9c04bd46c8",
+        "name": "function 2",
         "func": "if (msg.payload.action === \"draw\" && msg.payload.type === \"Rectangle\") {\n    flow.set('polygon', msg.payload.area);\n}\nelse if (msg.payload.action === \"drawdelete\") {\n    flow.set('polygon', null);\n\n}",
         "outputs": 1,
         "timeout": 0,
@@ -15,8 +144,42 @@
         "y": 460,
         "wires": [
             [
-                "002678895fea7dda"
+                "7811f687dc0ec93f"
             ]
         ]
+    },
+    {
+        "id": "6357e16078866ad2",
+        "type": "worldmap in",
+        "z": "5a668e9c04bd46c8",
+        "name": "",
+        "path": "/worldmap",
+        "events": "connect,disconnect,point,layer,bounds,files,draw,other",
+        "x": 220,
+        "y": 460,
+        "wires": [
+            [
+                "1d3b4c6aa197b5b2"
+            ]
+        ]
+    },
+    {
+        "id": "b71dce7fff649f38",
+        "type": "ui_group",
+        "name": "Standard",
+        "tab": "2873597ba1b9e55f",
+        "order": 1,
+        "disp": true,
+        "width": 20,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "2873597ba1b9e55f",
+        "type": "ui_tab",
+        "name": "Home",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
     }
 ]
